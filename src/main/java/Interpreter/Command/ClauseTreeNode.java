@@ -1,16 +1,28 @@
 package Interpreter.Command;
 
+/**
+ * @type: 0 => Operation Node (&&/||/...)
+ *         1 => Expression Node (id == 1/...)
+ * @param <T>
+ */
 public class ClauseTreeNode<T> {
+    private int type;
     private String operation;
     private String operator1;
     private T operator2;
-    private ClauseTreeNode left;
-    private ClauseTreeNode right;
+    public ClauseTreeNode child;
+    public ClauseTreeNode sibling;
 
-    public void set(String o_operation, String o_operator1, T o_operator2) {
+    public void setOperation(String o_operation) {
         this.operation = o_operation;
-        this.operator1 = o_operator1;
-        this.operator2 = o_operator2;
+    }
+
+    public void setChild(ClauseTreeNode o_child) {
+        this.child = o_child;
+    }
+
+    public void setSiblingChild(ClauseTreeNode o_sibling) {
+        this.sibling = o_sibling;
     }
 
     public String getOperation() {
