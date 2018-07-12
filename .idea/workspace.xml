@@ -1,17 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="b698d446-160f-4552-a832-925ce7b0e22a" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Interpreter/Command/ClauseTreeNode.java" afterPath="$PROJECT_DIR$/src/main/java/Interpreter/Command/ClauseTreeNode.java" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Interpreter/Command/Command.java" afterPath="$PROJECT_DIR$/src/main/java/Interpreter/Command/Command.java" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Interpreter/Command/CommandSet.java" afterPath="$PROJECT_DIR$/src/main/java/Interpreter/Command/CommandSet.java" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Interpreter/EvalVisitor.java" afterPath="$PROJECT_DIR$/src/main/java/Interpreter/EvalVisitor.java" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Interpreter/Handler.java" afterPath="$PROJECT_DIR$/src/main/java/Interpreter/Handler.java" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Interpreter/Command/ClauseTreeNode.class" afterPath="$PROJECT_DIR$/target/classes/Interpreter/Command/ClauseTreeNode.class" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Interpreter/Command/Command.class" afterPath="$PROJECT_DIR$/target/classes/Interpreter/Command/Command.class" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Interpreter/EvalVisitor.class" afterPath="$PROJECT_DIR$/target/classes/Interpreter/EvalVisitor.class" />
-    </list>
+    <list default="true" id="b698d446-160f-4552-a832-925ce7b0e22a" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -519,12 +509,12 @@
       <workItem from="1531153462899" duration="33000" />
       <workItem from="1531192777582" duration="17842000" />
       <workItem from="1531237160452" duration="5656000" />
-      <workItem from="1531405397068" duration="3901000" />
+      <workItem from="1531405397068" duration="4108000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="84278000" />
+    <option name="totallyTimeSpent" value="84485000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-11" y="-11" width="1942" height="1056" extended-state="6" />
