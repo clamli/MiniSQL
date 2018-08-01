@@ -149,28 +149,22 @@ exp_factor1:	exp_factor2 ( XOR_SYM exp_factor2 )* ;
 exp_factor2:	exp_factor3 ( AND_SYM exp_factor3 )* ;
 exp_factor3:	(NOT_SYM)? exp_factor4 ;
 exp_factor4:
-    ( predicate relational_op predicate )
-    | predicate
+    ( bit_expr relational_op bit_expr )
+    | bit_expr
 ;
-predicate  :  bit_expr;
 bit_expr  :
-    factor1 ( BITWISE factor1 )? ;
-factor1  :
-    factor2 ( BITAND factor2 )? ;
+	factor1 ( (PLUS|MINUS) factor1 )?
+;
+factor1:
+	factor2 ( (ASTERISK|DIVIDE|MOD_SYM|POWER_OP) factor2 )? ;
 factor2:
-	factor3 ( (PLUS|MINUS) factor3 )? ;
-factor3:
-	factor4 ( (ASTERISK|DIVIDE|MOD_SYM|POWER_OP) factor4 )? ;
-factor4:
-	(PLUS | MINUS | NEGATION) simple_expr
+	(PLUS | MINUS) simple_expr
     | simple_expr ;
 simple_expr:
 	literal_value
 	| column_spec
-	| expression_list
+	| LPAREN bit_expr RPAREN
 ;
-expression_list:
-	LPAREN expression ( COMMA expression )* RPAREN ;
 
 column_spec  :
 	( ( schema_name DOT )? table_name DOT )? column_name
@@ -233,8 +227,8 @@ delete_statement  :
 // insert : INSERT INTO table_name ( field1, field2,...fieldN ) VALUES ( value1, value2,...valueN )
 insert_statement  :
 	INSERT_SYM
-    	(INTO)? table_spec
-	(column_list)?
+        INTO table_spec
+	column_list
 	value_list_clause
 ;
 value_list_clause  :	(VALUES | VALUE_SYM) column_value_list (COMMA column_value_list)*;
@@ -248,13 +242,13 @@ update_statement  :
     (orderby_clause)?
 ;
 set_columns_clause:	SET_SYM set_column_clause ( COMMA set_column_clause )*;
-set_column_clause:	column_spec EQ_SYM (literal_value|DEFAULT) ;
+set_column_clause:	column_spec SET_VAR (literal_value|DEFAULT) ;
 
 // create_database_statement
-create_database_statement   :   CREATE (DATABASE | SCHEMA) (IF NOT_SYM EXISTS)? schema_name;
+create_database_statement   :   CREATE (DATABASE | SCHEMA) schema_name;
 
 // drop_database_statement
-drop_database_statement     :   DROP (DATABASE | SCHEMA) (IF EXISTS)? schema_name;
+drop_database_statement     :   DROP (DATABASE | SCHEMA) schema_name;
 
 // create_table_statement
 /**
@@ -262,32 +256,30 @@ drop_database_statement     :   DROP (DATABASE | SCHEMA) (IF EXISTS)? schema_nam
  * while primary can only be assigned to one columns.
  **/
 create_table_statement      :
-	CREATE TABLE (IF NOT_SYM EXISTS)? table_name
+	CREATE TABLE table_name
 	LPAREN create_definition (COMMA create_definition)* RPAREN
 ;
 create_definition           :
-     ( column_name column_definition )
+     ( column_name column_data_type_header )
    | ( PRIMARY_SYM KEY_SYM LPAREN column_name RPAREN )
    | ( UNIQUE_SYM LPAREN column_name (COMMA column_name)* RPAREN )
 ;
-column_definition   :
-	column_data_type_header
-;
+
 null_or_notnull     :
 	(NOT_SYM NULL_SYM) | NULL_SYM
 ;
 length	:	INTEGER_NUM;
 column_data_type_header:
-	| (  INT_SYM(LPAREN length RPAREN)? (null_or_notnull)? (DEFAULT number_literal)?  )
-	| (  INTEGER_SYM(LPAREN length RPAREN)? (null_or_notnull)? (DEFAULT number_literal)?  )
-	| (  FLOAT_SYM(LPAREN length COMMA number_literal RPAREN)? (null_or_notnull)? (DEFAULT number_literal)?  )
-	| (  CHAR (LPAREN length RPAREN)? (null_or_notnull)? (DEFAULT TEXT_STRING)?  )
+	| (  INT_SYM (null_or_notnull)? (DEFAULT number_literal)?  )
+	| (  INTEGER_SYM (null_or_notnull)? (DEFAULT number_literal)?  )
+	| (  FLOAT_SYM (null_or_notnull)? (DEFAULT number_literal)?  )
+	| (  CHAR (LPAREN length RPAREN) (null_or_notnull)? (DEFAULT TEXT_STRING)?  )
 ;
 
 // drop_table_statement
 drop_table_statement:
-	DROP TABLE (IF EXISTS)?
-	table_name (COMMA table_name)*
+	DROP TABLE
+	table_name
 ;
 
 // create_index_statement

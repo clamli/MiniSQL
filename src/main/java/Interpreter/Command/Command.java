@@ -5,32 +5,20 @@ import javafx.util.Pair;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class Command {
-    private String comm;
-    private String tblName;
-    private List<String> clnNames;
-    private ClauseTreeNode whereClause;
+    public String comm;
+    public String tblName;
+    public String idxName;
+    public Map<String, String> valueMap;
+    public Map<String, String> typeMap;
+    public String[] clnNames;
+    public ClauseTreeNode whereClause;
+    public String primaryKey;
+    public String[] uniqueKey;
+    public String[] nulls;
+    public String[] notNulls;
     /* <Column Name, ASC/DESC> */
-    private List<Pair<String, String>> orderClause;
-
-    public void setCommType(String commType) {
-        this.comm = commType;
-    }
-
-    public void setClnNames(String[] columns) {
-        this.clnNames = new ArrayList<String>(Arrays.asList(columns));
-    }
-
-    public void setTblName(String table) {
-        this.tblName = table;
-    }
-
-    public void setOrdClause(List<Pair<String, String>> clause) {
-        this.orderClause = clause;
-    }
-
-    public void setWhereClause(ClauseTreeNode clause) {
-        this.whereClause = clause;
-    }
+    public List<Pair<String, String>> orderClause;
 }

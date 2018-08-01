@@ -89,12 +89,6 @@ public interface MiniSQLVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExp_factor4(MiniSQLParser.Exp_factor4Context ctx);
 	/**
-	 * Visit a parse tree produced by {@link MiniSQLParser#predicate}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitPredicate(MiniSQLParser.PredicateContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link MiniSQLParser#bit_expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -113,29 +107,11 @@ public interface MiniSQLVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFactor2(MiniSQLParser.Factor2Context ctx);
 	/**
-	 * Visit a parse tree produced by {@link MiniSQLParser#factor3}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFactor3(MiniSQLParser.Factor3Context ctx);
-	/**
-	 * Visit a parse tree produced by {@link MiniSQLParser#factor4}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFactor4(MiniSQLParser.Factor4Context ctx);
-	/**
 	 * Visit a parse tree produced by {@link MiniSQLParser#simple_expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitSimple_expr(MiniSQLParser.Simple_exprContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MiniSQLParser#expression_list}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitExpression_list(MiniSQLParser.Expression_listContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MiniSQLParser#column_spec}.
 	 * @param ctx the parse tree
@@ -274,12 +250,6 @@ public interface MiniSQLVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitCreate_definition(MiniSQLParser.Create_definitionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MiniSQLParser#column_definition}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitColumn_definition(MiniSQLParser.Column_definitionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MiniSQLParser#null_or_notnull}.
 	 * @param ctx the parse tree

@@ -1,11 +1,9 @@
 package Interpreter.Command;
 
+import com.sun.deploy.util.ArrayUtil;
 import javafx.util.Pair;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CommandSet {
     /**
@@ -34,7 +32,7 @@ public class CommandSet {
      * @param comm_type
      */
     public void setCommandName(String comm_type) {
-        cur_comm.setCommType(comm_type);
+        cur_comm.comm = comm_type;
     }
 
     /**
@@ -42,7 +40,7 @@ public class CommandSet {
      * @param columns
      */
     public void setColumnsName(String[] columns) {
-        cur_comm.setClnNames(columns);
+        cur_comm.clnNames = columns;
     }
 
     /**
@@ -50,7 +48,63 @@ public class CommandSet {
      * @param table
      */
     public void setTableName(String table) {
-        cur_comm.setTblName(table);
+        cur_comm.tblName = table;
+    }
+
+    /**
+     * 存储索引名字
+     * @param index
+     */
+    public void setIndexName(String index) {
+        cur_comm.idxName = index;
+    }
+
+    /**
+     * 存储表中的参数和值列表
+     * @param values
+     */
+    public void setValueMap(Map<String, String> values) {
+        cur_comm.valueMap = values;
+    }
+
+    /**
+     * 存储表中的参数和类型列表
+     * @param types
+     */
+    public void setTypeMap(Map<String, String> types) {
+        cur_comm.typeMap = types;
+    }
+
+    /**
+     * 存储表的主键
+     * @param primary_key
+     */
+    public void setPrimaryKey(String primary_key) {
+        cur_comm.primaryKey = primary_key;
+    }
+
+    /**
+     * 存储表的唯一键
+     * @param unique_key
+     */
+    public void setUniqueKey(String[] unique_key) {
+        cur_comm.uniqueKey = unique_key;
+    }
+
+    /**
+     * 存储表中可为NULL的值
+     * @param nullList
+     */
+    public void setNulls(List<String> nullList) {
+        cur_comm.nulls = nullList.toArray(new String[nullList.size()]);
+    }
+
+    /**
+     * 存储表中不可为NULL的值
+     * @param notNullList
+     */
+    public void setNotNulls(List<String> notNullList) {
+        cur_comm.notNulls = notNullList.toArray(new String[notNullList.size()]);
     }
 
     /**
@@ -58,7 +112,7 @@ public class CommandSet {
      * @param clause
      */
     public void setOrderClause(List<Pair<String, String>> clause) {
-        cur_comm.setOrdClause(clause);
+        cur_comm.orderClause = clause;
     }
 
     /**
@@ -66,6 +120,6 @@ public class CommandSet {
      *
      */
     public void setWhereClause(ClauseTreeNode clause) {
-        cur_comm.setWhereClause(clause);
+        cur_comm.whereClause = clause;
     }
 }
