@@ -5,14 +5,10 @@ import Interpreter.Command.*;
 import antlr.gen.MiniSQLBaseVisitor;
 import antlr.gen.MiniSQLLexer;
 import antlr.gen.MiniSQLParser;
-import com.sun.org.glassfish.gmbal.ManagedObject;
 import javafx.util.Pair;
-import org.antlr.v4.runtime.ANTLRInputStream;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.Parser;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -20,22 +16,22 @@ import java.util.*;
 
 public class EvalVisitor extends MiniSQLBaseVisitor {
 
-    private static CommandSet commandSet = new CommandSet();
+    public static CommandSet commandSet = new CommandSet();
 
     public <T> ClauseTreeNode expFactorHandler(List<T> exp_factors, Method method, String operation) {
         ClauseTreeNode root = null;
         try {
-            if (exp_factors.size() == 1)
+            if (exp_factors.size() == 1 && !operation.equals("NOT"))
                 return (ClauseTreeNode) method.invoke(EvalVisitor.class.newInstance(), exp_factors.get(0));
             root = new ClauseTreeNode();
             ClauseTreeNode node = root;
             if (operation.equals("NOT")) {
-                node.setOperation(operation);
+                node.operation = operation;
                 node.child = (ClauseTreeNode) method.invoke(EvalVisitor.class.newInstance(), exp_factors.get(0));
                 return node;
             }
             for ( int i = 0; i < exp_factors.size(); i++ ) {
-                node.setOperation(operation);
+                node.operation = operation;
                 node.child = (ClauseTreeNode) method.invoke(EvalVisitor.class.newInstance(), exp_factors.get(i));
                 if (i != exp_factors.size()-1) {
                     node.sibling = new ClauseTreeNode();
@@ -48,14 +44,26 @@ public class EvalVisitor extends MiniSQLBaseVisitor {
         return root;
     }
 
+    public CompExpTreeNode compExpHandler(List<MiniSQLParser.Bit_exprContext> bit_exprs, Method method, String operation) {
+        CompExpTreeNode compExpTreeNode = new CompExpTreeNode();
+        try {
+            compExpTreeNode.operation = operation;
+            compExpTreeNode.left = (BitExpTreeNode) method.invoke(EvalVisitor.class.newInstance(), bit_exprs.get(0));
+            compExpTreeNode.right = (BitExpTreeNode) method.invoke(EvalVisitor.class.newInstance(), bit_exprs.get(1));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return compExpTreeNode;
+    }
+
     public <T> BitExpTreeNode bitExpHandler(List<T> bit_exprs, Method method, String operation) {
         BitExpTreeNode bitExpTreeNode = null;
         try {
             if (bit_exprs.size() == 1)
                 return (BitExpTreeNode) method.invoke(EvalVisitor.class.newInstance(), bit_exprs.get(0));
             bitExpTreeNode = new BitExpTreeNode();
-            bitExpTreeNode.setType(0);          /* set node type as factor */
-            bitExpTreeNode.setOperation(operation);
+//            bitExpTreeNode.setType(0);          /* set node type as factor */
+            bitExpTreeNode.operation = operation;
             bitExpTreeNode.left = (BitExpTreeNode) method.invoke(EvalVisitor.class.newInstance(), bit_exprs.get(0));
             bitExpTreeNode.right = (BitExpTreeNode) method.invoke(EvalVisitor.class.newInstance(), bit_exprs.get(1));
         } catch (Exception e) {
@@ -64,20 +72,25 @@ public class EvalVisitor extends MiniSQLBaseVisitor {
         return bitExpTreeNode;
     }
 
-    public <T> BitExpTreeNode simExpHandler(MiniSQLParser.Simple_exprContext simple_expr, Method method, String operation) {
+    public <T> BitExpTreeNode simExpHandler(MiniSQLParser.Simple_exprContext simple_expr, Method method) {
         BitExpTreeNode bitExpTreeNode = null;
         try {
             bitExpTreeNode = new BitExpTreeNode();
             bitExpTreeNode.simExpTreeNode = new SimExpTreeNode();
-            bitExpTreeNode.setType(1);         /* set node type as simExpTreeNode */
+//            bitExpTreeNode.setType(1);         /* set node type as simExpTreeNode */
             if (simple_expr.literal_value() != null) {
-                bitExpTreeNode.simExpTreeNode.setType(0);
-                bitExpTreeNode.simExpTreeNode.setContent(simple_expr.literal_value().getText());
+                bitExpTreeNode.simExpTreeNode.type = 0;
+                if (simple_expr.literal_value().string_literal() != null) bitExpTreeNode.simExpTreeNode.valType = 2;
+                else if (simple_expr.literal_value().NULL_SYM() != null) bitExpTreeNode.simExpTreeNode.valType = 3;
+                else if (simple_expr.literal_value().number_literal().INTEGER_NUM() != null) bitExpTreeNode.simExpTreeNode.valType = 0;
+                else if (simple_expr.literal_value().number_literal().REAL_NUM() != null) bitExpTreeNode.simExpTreeNode.valType = 1;
+//                    String sign = simple_expr.literal_value().number_literal().getChild(0).getText();
+                bitExpTreeNode.simExpTreeNode.content = simple_expr.literal_value().getText();
             } else if (simple_expr.column_spec() != null) {
-                bitExpTreeNode.simExpTreeNode.setType(1);
-                bitExpTreeNode.simExpTreeNode.setContent(simple_expr.column_spec().getText());
+                bitExpTreeNode.simExpTreeNode.type = 1;
+                bitExpTreeNode.simExpTreeNode.content = simple_expr.column_spec().getText();
             } else {
-                bitExpTreeNode.simExpTreeNode.setType(2);
+                bitExpTreeNode.simExpTreeNode.type = 2;
                 bitExpTreeNode.simExpTreeNode.bitExpTreeNode = (BitExpTreeNode) method.invoke(EvalVisitor.class.newInstance(), simple_expr.bit_expr());
             }
         } catch (Exception e) {
@@ -91,8 +104,7 @@ public class EvalVisitor extends MiniSQLBaseVisitor {
         BitExpTreeNode bitExpTreeNode = null;
         try {
             bitExpTreeNode = simExpHandler(ctx.simple_expr(),
-                    EvalVisitor.class.getMethod("visitBit_expr", MiniSQLParser.Bit_exprContext.class),
-                    ctx.getChildCount() == 1 ? "" : ctx.getChild(0).getText());
+                    EvalVisitor.class.getMethod("visitBit_expr", MiniSQLParser.Bit_exprContext.class));
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
@@ -127,16 +139,20 @@ public class EvalVisitor extends MiniSQLBaseVisitor {
 
     @Override
     public ClauseTreeNode visitExp_factor4(MiniSQLParser.Exp_factor4Context ctx) {
-        BitExpTreeNode bitExpTreeNode = null;
-        try {
-            bitExpTreeNode = bitExpHandler(ctx.bit_expr(),
-                    EvalVisitor.class.getMethod("visitBit_expr", MiniSQLParser.Bit_exprContext.class),
-                    ctx.relational_op() == null ? "" : ctx.relational_op().getText());
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+        ClauseTreeNode clauseTreeNode;
+        if (ctx.expression() != null) {
+            clauseTreeNode = visitExpression(ctx.expression());
+        } else {
+            CompExpTreeNode compExpTreeNode = null;
+            try {
+                compExpTreeNode = compExpHandler(ctx.bit_expr(),
+                        EvalVisitor.class.getMethod("visitBit_expr", MiniSQLParser.Bit_exprContext.class), ctx.relational_op().getText());
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+            clauseTreeNode = new ClauseTreeNode();
+            clauseTreeNode.compExpTreeNode = compExpTreeNode;
         }
-        ClauseTreeNode clauseTreeNode = new ClauseTreeNode();
-        clauseTreeNode.bitExpTreeNode = bitExpTreeNode;
         return clauseTreeNode;
     }
 
@@ -146,7 +162,7 @@ public class EvalVisitor extends MiniSQLBaseVisitor {
         try {
             clauseTreeNode = expFactorHandler(new ArrayList<MiniSQLParser.Exp_factor4Context>(Arrays.asList(ctx.exp_factor4())),
                     EvalVisitor.class.getMethod("visitExp_factor4", MiniSQLParser.Exp_factor4Context.class),
-                    "NOT");
+                    ctx.NOT_SYM() == null ? "" : "NOT");
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
@@ -159,7 +175,7 @@ public class EvalVisitor extends MiniSQLBaseVisitor {
         try {
             clauseTreeNode = expFactorHandler(ctx.exp_factor3(),
                     EvalVisitor.class.getMethod("visitExp_factor3", MiniSQLParser.Exp_factor3Context.class),
-                    "AND");
+                    ctx.AND_SYM() == null ? "" : "AND");
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
@@ -172,7 +188,7 @@ public class EvalVisitor extends MiniSQLBaseVisitor {
         try {
             clauseTreeNode = expFactorHandler(ctx.exp_factor2(),
                     EvalVisitor.class.getMethod("visitExp_factor2", MiniSQLParser.Exp_factor2Context.class),
-                    "XOR");
+                    ctx.XOR_SYM() == null ? "" : "XOR");
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
@@ -185,7 +201,7 @@ public class EvalVisitor extends MiniSQLBaseVisitor {
         try {
             clauseTreeNode = expFactorHandler(ctx.exp_factor1(),
                     EvalVisitor.class.getMethod("visitExp_factor1", MiniSQLParser.Exp_factor1Context.class),
-                    "OR");
+                    ctx.OR_SYM() == null ? "" : "OR");
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
@@ -293,19 +309,27 @@ public class EvalVisitor extends MiniSQLBaseVisitor {
         String status = "NULL";
         String type = ctx.getChild(0).getText().toUpperCase();
         String value = null;
-        if (type.equals("CHAR")) {      /* type : char initializes to "   " */
-            int size = Integer.parseInt(ctx.getChild(0).getText().substring(1, ctx.getChild(0).getText().length()-1));
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < size; i++) sb.append(" ");
-            value = sb.toString();
-        }
+//        if (type.equals("CHAR")) {      /* type : char initializes to "   " */
+//            int size = Integer.parseInt(ctx.getChild(2).getText());
+//            StringBuilder sb = new StringBuilder();
+//            for (int i = 0; i < size; i++) sb.append('#');
+//            value = sb.toString();
+//        }
         if (ctx.null_or_notnull() != null)
             status = ctx.null_or_notnull().getText().toUpperCase();       /* NOTNULL */
         if (ctx.DEFAULT() != null) {
             if (type.equals("CHAR")) {
-                String defvalue = ctx.TEXT_STRING().getText().replace("\'", "");
-                if (value.length() <= defvalue.length()) value = defvalue.substring(0, value.length());
-                else value = defvalue + value.substring(defvalue.length());
+//                String defvalue = ctx.TEXT_STRING().getText().replace("\'", "");
+//                if (value.length() <= defvalue.length()) value = defvalue.substring(0, value.length());
+//                else value = defvalue + value.substring(defvalue.length());
+                value = ctx.TEXT_STRING().getText().replace("\'", "");
+                int size = Integer.parseInt(ctx.getChild(2).getText());
+                if (value.length() > size) value = value.substring(0, size);
+                else { /* 把字符串补足指定长度 */
+                    StringBuilder tail = new StringBuilder();
+                    for (int i = 0; i < size - value.length(); i++) tail.append('#');
+                    value += tail;
+                }
             } else {
                 value = ctx.number_literal().getText();
             }
@@ -390,14 +414,22 @@ public class EvalVisitor extends MiniSQLBaseVisitor {
         return null;
     }
 
-    public static void main(String args[]) throws Exception {
-//        String sql = "select id, name from test where (id+3)*2.1 > 0 && ab < 5 order by id ASC, ab;";
+    @Override
+    public Object visitExit(MiniSQLParser.ExitContext ctx) {
+        commandSet.addCommand("NEW");
+        commandSet.setCommandName("EXIT");
+        return null;
+    }
+
+    public static void main(String args[]) {
+        String sql = "select id1, id2 from test where (id1+1)>0 && id2>=12 || !(id3 == 0 && id4 < -1);";
+//        String sql = "select id, name from test where (id+3)*2.1 >= 0 && ab < 5 order by id ASC, ab;";
 //        String sql = "delete from test where id > 5;";
 //        String sql = "update test set stuName='liutao', stuAge=13 where id > 5;";
 //        String sql = "create database test;";
-//        String sql = "CREATE TABLE test (id1 int default 1, id2 float not null, id3 char(5) default 'hello' , primary key (id1), unique (id1, id2));";
+//        String sql = "CREATE TABLE test (id1 int default 1, id2 float not null, id3 char(15) default 'hello' , primary key (id1), unique (id1, id2));";
 //        String sql = "CREATE UNIQUE INDEX index1 ON test (id1, id2, id3);";
-        String sql = "DROP INDEX index1 ON test;";
+//        String sql = "DROP INDEX index1 ON test;";
 
         /* 1. Lexer Analysis */
         MiniSQLLexer lexer = new MiniSQLLexer(CharStreams.fromString(sql));
@@ -410,7 +442,6 @@ public class EvalVisitor extends MiniSQLBaseVisitor {
         /* 3. Application based on Syntax Tree */
         EvalVisitor eval = new EvalVisitor();
         eval.visit(tree);
-//        System.out.println();
     }
 }
 

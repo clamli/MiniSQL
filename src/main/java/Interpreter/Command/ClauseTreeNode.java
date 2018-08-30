@@ -2,14 +2,15 @@ package Interpreter.Command;
 
 public class ClauseTreeNode {
 //    private int type;
-    private String operation;
+    public String operation;
     public ClauseTreeNode child;
     public ClauseTreeNode sibling;
-    public BitExpTreeNode bitExpTreeNode;
+    public CompExpTreeNode compExpTreeNode;
+//    public BitExpTreeNode bitExpTreeNode;
 
-    public void setOperation(String o_operation) {
-        this.operation = o_operation;
-    }
+//    public void setOperation(String o_operation) {
+//        this.operation = o_operation;
+//    }
 
 //    public void setChild(ClauseTreeNode o_child) {
 //        this.child = o_child;
@@ -19,7 +20,7 @@ public class ClauseTreeNode {
 //        this.sibling = o_sibling;
 //    }
 
-    public String getOperation() {
-        return this.operation;
-    }
+//    public String getOperation() {
+//        return this.operation;
+//    }
 }

@@ -70,12 +70,58 @@
   DROP INDEX 索引名 ON 表名
   ```
 
-  
+- EXIT ：
+
+  ```
+  EXIT
+  ```
+
+#### Catalog Manager :
+
+#### Record Manager :
+
+- order by 暂未实现
+
+#### Buffer Manager :
+
+- 缓存淘汰算法（LRU，利用时钟算法实现）![1535258839115](C:\Users\lenovo\AppData\Local\Temp\1535258839115.png)
+
+如上图所示，当使用到某一块时，就把块对应的reference_bit位置true，当随机抽取到某块时，若该块的reference_bit位为true，则将其置false，继续寻找目标块；若该块的reference_bit位为false，则该块即为目标块。
+
+代码示例：
+
+```
+do {
+	pointer = (pointer + 1) % NUMOFBLOCKS;
+	if (blocks[pointer].reference_bit == true) {
+        blocks[pointer].reference_bit = false;
+	}
+	else if (blocks[pointer].reference_bit == false) {
+		return pointer;
+	}
+} while (true);
+```
+
+
+
+
 
 #### NOTICE：
 
 - 所有命令中涉及到字符串值的两端需为单引号。
+
+- 命令行语句分号可加可不加，命令大小写随意。
+
 - 建表命令中主键（Primary key）只能有一个，唯一键（Unique key）可以有若干个。
+
 - 建表时类型后不需要加最大显示宽度。
+
 - MiniSQL不区分char和varchar，char进行检索时删除尾部空格。
+
+- MiniSQL中的char占一个字节。
+
 - MiniSQL默认每个字段均可为NULL，若想设置为NOT NULL，需要在建表时声明。
+
+- 为了区分NULL值，在int类型中，取int类型的最大值作为NULL值；在float类型中，取float类型的最大值作为NULL值；在string类型中，取string字符串"$$$"（'$'个数以字符串长度来定）作为NULL值。
+
+  

@@ -65,6 +65,7 @@ INT_SYM				: I_ N_ T_  ;
 CHAR				: C_ H_ A_ R_ ;
 INTEGER_SYM			: I_ N_ T_ E_ G_ E_ R_  ;
 FLOAT_SYM			: F_ L_ O_ A_ T_  ;
+EXIT                : E_ X_ I_ T_;
 
 
 // basic token definition
@@ -77,8 +78,8 @@ XOR_SYM     : ( X_ O_ R_ );
 UNION_SYM   : ( U_ N_ I_ O_ N_ );
 
 ARROW       : '=>';
-EQ_SYM      : '==' | '<=>';
-NOT_EQ      : '<>' | '!=' | '~=' | '^=';
+EQ_SYM      : '==';
+NOT_EQ      : '!=';
 LET         : '<=';
 LTH         : '<';
 GET         : '>=';
@@ -137,10 +138,10 @@ literal_value   : ( string_literal | number_literal | NULL_SYM);
 
 
 // identifiers
-schema_name	 : tmpName=ID {if($tmpName.getText().length() <= 64) System.out.println("schema name = " + $tmpName.getText() + " \n");};
-table_name	 : tmpName=ID {if($tmpName.getText().length() <= 64) System.out.println("table name = " + $tmpName.getText() + " \n");};
-column_name	 : tmpName=ID {if($tmpName.getText().length() <= 64) System.out.println("column name = " + $tmpName.getText() + " \n");};
-index_name   : tmpName=ID {if($tmpName.getText().length() <= 64) System.out.println("index name = " + $tmpName.getText() + " \n");};
+schema_name	 : tmpName=ID /* {if($tmpName.getText().length() <= 64) System.out.println("schema name = " + $tmpName.getText() + " \n");}*/;
+table_name	 : tmpName=ID /* {if($tmpName.getText().length() <= 64) System.out.println("table name = " + $tmpName.getText() + " \n");}*/;
+column_name	 : tmpName=ID /* {if($tmpName.getText().length() <= 64) System.out.println("column name = " + $tmpName.getText() + " \n");}*/;
+index_name   : tmpName=ID /* {if($tmpName.getText().length() <= 64) System.out.println("index name = " + $tmpName.getText() + " \n");}*/;
 
 
 // expression statement
@@ -149,8 +150,8 @@ exp_factor1:	exp_factor2 ( XOR_SYM exp_factor2 )* ;
 exp_factor2:	exp_factor3 ( AND_SYM exp_factor3 )* ;
 exp_factor3:	(NOT_SYM)? exp_factor4 ;
 exp_factor4:
-    ( bit_expr relational_op bit_expr )
-    | bit_expr
+    ( LPAREN expression RPAREN )
+    | ( bit_expr relational_op bit_expr )
 ;
 bit_expr  :
 	factor1 ( (PLUS|MINUS) factor1 )?
@@ -158,8 +159,7 @@ bit_expr  :
 factor1:
 	factor2 ( (ASTERISK|DIVIDE|MOD_SYM|POWER_OP) factor2 )? ;
 factor2:
-	(PLUS | MINUS) simple_expr
-    | simple_expr ;
+    simple_expr ;
 simple_expr:
 	literal_value
 	| column_spec
@@ -179,7 +179,7 @@ column_list:
 
 // SQL Statement Syntax
 root_statement  :
-    ( data_manipulation_statements | data_definition_statements)
+    ( data_manipulation_statements | data_definition_statements | exit)
     ( SEMI ) ?
 ;
 
@@ -271,7 +271,7 @@ null_or_notnull     :
 length	:	INTEGER_NUM;
 column_data_type_header:
 	| (  INT_SYM (null_or_notnull)? (DEFAULT number_literal)?  )
-	| (  INTEGER_SYM (null_or_notnull)? (DEFAULT number_literal)?  )
+//	| (  INTEGER_SYM (null_or_notnull)? (DEFAULT number_literal)?  )
 	| (  FLOAT_SYM (null_or_notnull)? (DEFAULT number_literal)?  )
 	| (  CHAR (LPAREN length RPAREN) (null_or_notnull)? (DEFAULT TEXT_STRING)?  )
 ;
@@ -291,4 +291,9 @@ create_index_statement:
 // drop_index_statement
 drop_index_statement:
 	DROP INDEX_SYM index_name ON table_name
+;
+
+// exit
+exit:
+    EXIT
 ;

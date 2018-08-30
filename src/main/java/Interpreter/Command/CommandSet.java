@@ -1,8 +1,6 @@
 package Interpreter.Command;
 
-import com.sun.deploy.util.ArrayUtil;
 import javafx.util.Pair;
-
 import java.util.*;
 
 public class CommandSet {
@@ -25,6 +23,14 @@ public class CommandSet {
     public void addCommand(String comm_status) {
         cur_comm = new Command();
         comm_map.get(comm_status).add(cur_comm);
+    }
+
+    /**
+     * 返回当前命令
+     * @return command
+     */
+    public Command retCurCommand() {
+        return cur_comm;
     }
 
     /**

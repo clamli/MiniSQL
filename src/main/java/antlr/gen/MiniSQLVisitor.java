@@ -286,4 +286,10 @@ public interface MiniSQLVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitDrop_index_statement(MiniSQLParser.Drop_index_statementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MiniSQLParser#exit}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExit(MiniSQLParser.ExitContext ctx);
 }
