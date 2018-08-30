@@ -6,7 +6,7 @@
 
 - 环境：IDEA Ultimate 2017.3
 
-#### Interpreter : 
+#### 模块1、Interpreter : 
 
 基于Antlr v4，支持语法如下，
 
@@ -76,15 +76,15 @@
   EXIT
   ```
 
-#### Catalog Manager :
+#### 模块2、Catalog Manager :
 
-#### Record Manager :
+#### 模块3、Record Manager :
 
 - order by 暂未实现
 
-#### Buffer Manager :
+#### 模块4、Buffer Manager :
 
-- 缓存淘汰算法（LRU，利用时钟算法实现）![1535258839115](C:\Users\lenovo\AppData\Local\Temp\1535258839115.png)
+- 缓存淘汰算法（LRU，利用时钟算法实现）![时钟算法](D:\IDEA programming\MiniSQL\image-folder\时钟算法.png)
 
 如上图所示，当使用到某一块时，就把块对应的reference_bit位置true，当随机抽取到某块时，若该块的reference_bit位为true，则将其置false，继续寻找目标块；若该块的reference_bit位为false，则该块即为目标块。
 
@@ -104,9 +104,7 @@ do {
 
 
 
-
-
-#### NOTICE：
+### NOTICE：
 
 - 所有命令中涉及到字符串值的两端需为单引号。
 
