@@ -84,7 +84,9 @@
 
 ### 模块4、Buffer Manager :
 
-- 缓存淘汰算法（LRU，利用时钟算法实现）![时钟算法](https://github.com/clamli/MiniSQL/blob/master/image-folder/%E6%97%B6%E9%92%9F%E7%AE%97%E6%B3%95.png)
+- 缓存淘汰算法（LRU，利用时钟算法实现）
+
+[时钟算法](https://github.com/clamli/MiniSQL/blob/master/image-folder/%E6%97%B6%E9%92%9F%E7%AE%97%E6%B3%95.png)
 
 如上图所示，当使用到某一块时，就把块对应的reference_bit位置true，当随机抽取到某块时，若该块的reference_bit位为true，则将其置false，继续寻找目标块；若该块的reference_bit位为false，则该块即为目标块。
 
