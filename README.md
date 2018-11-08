@@ -96,7 +96,7 @@
 do {
 	pointer = (pointer + 1) % NUMOFBLOCKS;
 	if (blocks[pointer].reference_bit == true) {
-        blocks[pointer].reference_bit = false;
+        	blocks[pointer].reference_bit = false;
 	}
 	else if (blocks[pointer].reference_bit == false) {
 		return pointer;
